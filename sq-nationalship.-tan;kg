@@ -136,7 +136,8 @@ DROP TABLE IF EXISTS T3;
 
 create temp table T3 AS (
 
-select trunc(rc.creation_date) as creation_date,
+select distinct 
+trunc(rc.creation_date) as creation_date,
 extract(YEAR from rc.creation_date) as order_year,
 -- date_part(year,rc.creation_date) as order_yr,
 extract(MONTH from rc.creation_date) as order_month,
@@ -151,7 +152,7 @@ else 'FBA' end as IOG,
 -- rc.inventory_owner_group_id,
 T1.removal_disposition,
 -- rc.removal_disposition_code,
-rc.gl,
+-- rc.gl,
 rc.units_shipped,
 rc.removal_order_id,
 T1.distributor_id,
@@ -176,7 +177,7 @@ T3.order_week,
 T3.warehouse_id,
 T3.iog,
 T3.removal_disposition,
-T3.gl,
+-- T3.gl,
 case when T2.distance_in_km >= 0 and T2.distance_in_km <= 80 then 'Local (<80 Km)'
 when T2.distance_in_km > 80 and T2.distance_in_km <=350 then 'Regional  (80-350 Km)'
 when T2.distance_in_km > 350 then 'National (>350Km)'
