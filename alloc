@@ -209,6 +209,14 @@ Sheets("Dispute ID level tracking").Range("A6:M100000").ClearContents
 ''dddd
 Workbooks.Open ("C:\Chaitanya\Recon\Unassigned\resultss.csv")
 ''''''
+Sheets("Hidden").Select
+ActiveSheet.ShowAllData
+hd1 = Range("A" & Rows.Count).End(xlUp).Row
+For hdd = 3 To hd1
+ActiveSheet.Cells(hdd, 13).Value = "88"
+Next hdd
+'''''''
+
 ActiveSheet.Range("A2:M2").AutoFilter Field:=13, Criteria1:="88"
 Range("A2:M2").Select
 Range(Selection, Selection.End(xlDown)).Select
@@ -340,6 +348,14 @@ ActiveSheet.Range("AL:BR").AutoFilter Field:=33, Criteria1:="<>"
 ''dddd
 Workbooks.Open ("C:\Chaitanya\Recon\Unassigned\resultss.csv")
 ''''''
+''''''
+Sheets("Hidden").Select
+ActiveSheet.ShowAllData
+hd2 = Range("BQ" & Rows.Count).End(xlUp).Row
+For hddd = 2 To hd2
+ActiveSheet.Cells(hddd, 70).Value = "88"
+Next hddd
+'''''''
 lastrow = Range("A" & Rows.Count).End(xlUp).Row
 Range("AL1").Select
 Range(Selection, Selection.End(xlDown)).Select
