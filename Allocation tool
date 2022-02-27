@@ -1,0 +1,729 @@
+Sub dbsm()
+Dim txt As String, link As String
+Dim Element As Object
+Dim IE As Object
+Dim Doc As Object
+Dim objElement As Object
+Dim buttonCollection As Object
+Dim p, strdesc As String
+Application.ScreenUpdating = False
+Dim strMyPath As String, strDBName As String, strDB As String
+Dim strSQL As String
+Dim adoRecSet As New ADODB.Recordset
+Dim connDB As New ADODB.Connection
+Dim lastrow As Long
+Dim a, i As Double
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+Sheets("Hidden").Visible = True
+strdesc3 = ActiveWorkbook.Name
+Workbooks.Open ("C:\Chaitanya\Recon\Unassigned\results.csv")
+If ActiveSheet.Range("A2") <> "" Then
+ActiveSheet.Range("A2:C2").Select
+If ActiveSheet.Range("A3") <> "" Then
+Range(Selection, Selection.End(xlDown)).Select
+End If
+Selection.Copy
+Windows(strdesc3).Activate
+Sheets("Dispute ID level tracking").Select
+Range("A6").Select
+ActiveSheet.Paste
+Application.CutCopyMode = False
+Windows("results.csv").Activate
+
+'New code for additional column delete
+ActiveSheet.Columns(4).EntireColumn.Delete
+ActiveSheet.Columns(13).EntireColumn.Delete
+'new code ends
+
+ActiveSheet.Range("F2:K2").Select
+If ActiveSheet.Range("A3") <> "" Then
+Range(Selection, Selection.End(xlDown)).Select
+End If
+Selection.Copy
+Windows(strdesc3).Activate
+Sheets("Dispute ID level tracking").Select
+Range("D6").Select
+ActiveSheet.Paste
+Application.CutCopyMode = False
+Windows("results.csv").Activate
+ActiveWorkbook.Close False
+Cells.Replace What:="INR", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Kill ("C:\Chaitanya\Recon\Unassigned\results.csv")
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+Range("K6", "K" & lastrow).Value = "N"
+
+'Call unassigneddata
+Call Mergingfiles
+Workbooks.Open ("C:\Chaitanya\Recon\Removal_Reports\ct\Removal_Report.xlsx")
+Sheets("orders").Range("AH:AH").Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CA1").Select
+ActiveSheet.Paste
+Windows("Removal_Report.xlsx").Activate
+Sheets("orders").Range("A:AG").Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CB1").Select
+ActiveSheet.Paste
+Application.CutCopyMode = False
+Windows("Removal_Report.xlsx").Activate
+ActiveWorkbook.Close False
+Workbooks.Open ("C:\Chaitanya\Recon\Removal_Reports\ct\Cloudtail Removal Report-2021.xlsx")
+Sheets("orders").Range("AH2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CA1").Select
+Selection.End(xlDown).Select
+ActiveCell.Offset(1, 0).Select
+ActiveSheet.Paste
+Windows("Cloudtail Removal Report-2021").Activate
+Sheets("orders").Range("A2:AG2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CB1").Select
+Selection.End(xlDown).Select
+ActiveCell.Offset(1, 0).Select
+ActiveSheet.Paste
+Application.CutCopyMode = False
+Windows("Cloudtail Removal Report-2021.xlsx").Activate
+ActiveWorkbook.Close False
+Workbooks.Open ("C:\Chaitanya\Recon\Removal_Reports\appario\Removal_Report_2019.xlsx")
+Sheets("orders").Range("AH2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CA1").Select
+Selection.End(xlDown).Select
+ActiveCell.Offset(1, 0).Select
+ActiveSheet.Paste
+Windows("Removal_Report_2019.xlsx").Activate
+Sheets("orders").Range("A2:AG2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CB1").Select
+Selection.End(xlDown).Select
+ActiveCell.Offset(1, 0).Select
+ActiveSheet.Paste
+Application.CutCopyMode = False
+Windows("Removal_Report_2019.xlsx").Activate
+ActiveWorkbook.Close False
+Workbooks.Open ("C:\Chaitanya\Recon\Removal_Reports\ct\Removal_Report_2020.xlsx")
+Sheets("orders").Range("AH2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CA1").Select
+Selection.End(xlDown).Select
+ActiveCell.Offset(1, 0).Select
+ActiveSheet.Paste
+Windows("Removal_Report_2020.xlsx").Activate
+Sheets("orders").Range("A2:AG2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CB1").Select
+Selection.End(xlDown).Select
+ActiveCell.Offset(1, 0).Select
+ActiveSheet.Paste
+Application.CutCopyMode = False
+Windows("Removal_Report_2020.xlsx").Activate
+ActiveWorkbook.Close False
+Workbooks.Open ("\\BLR2-1800082384\Chaitanya\Recon\Others\Removal_Report\Removal_Report_Exception.xlsx")
+Sheets("orders").Range("AH2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CA1").Select
+Selection.End(xlDown).Select
+ActiveCell.Offset(1, 0).Select
+''''''''''''''''''''
+On Error Resume Next
+ActiveSheet.Paste
+On Error GoTo 0
+''''''''''''''''''''
+Windows("Removal_Report_Exception.xlsx").Activate
+Sheets("orders").Range("A2:AG2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("CB1").Select
+Selection.End(xlDown).Select
+ActiveCell.Offset(1, 0).Select
+''''''''''''''''''''
+On Error Resume Next
+ActiveSheet.Paste
+On Error GoTo 0
+''''''''''''''''''''
+Application.CutCopyMode = False
+Windows("Removal_Report_Exception.xlsx").Activate
+ActiveWorkbook.Close False
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+Range("K3", "k" & lastrow) = "=IFERROR(VLOOKUP(A3,AM:AP,4,0),"""")"
+Range("K2", "k" & lastrow) = Range("k2", "k" & lastrow).Value
+Sheets("Hidden").Select
+lastrow = Range("AN" & Rows.Count).End(xlUp).Row
+Range("BR2", "BR" & lastrow).Formula = "=IFERROR(VLOOKUP(AO2,CA:CJ,10,0),"""")"
+Range("BR2", "BR" & lastrow) = Range("BR2", "BR" & lastrow).Value
+Range("BS2", "BS" & lastrow).Formula = "=IFERROR(VLOOKUP(AO2,CA:CM,13,0),"""")"
+Range("BS2", "BS" & lastrow) = Range("BS2", "BS" & lastrow).Value
+Sheets("Dispute ID level tracking").Select
+Range("A5:L5").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+Sheets("Hidden").Select
+Range("A2").Select
+ActiveSheet.Paste
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+Range("M3", "M" & lastrow).Formula = "=IFERROR(VLOOKUP(A3,AM:BS,32,0),"""")"
+Range("L3", "L" & lastrow).Formula = "=IFERROR(VLOOKUP(A3,AM:BS,33,0),"""")"
+Range("M2", "L" & lastrow) = Range("M2", "L" & lastrow).Value
+Range("A2").Select
+Selection.AutoFilter
+ActiveWorkbook.Worksheets("Hidden").AutoFilter.Sort.SortFields.Clear
+ActiveWorkbook.Worksheets("Hidden").AutoFilter.Sort.SortFields.Add Key:=Range _
+("H:H"), SortOn:=xlSortOnValues, Order:=xlDescending, DataOption:= _
+xlSortNormal
+With ActiveWorkbook.Worksheets("Hidden").AutoFilter.Sort
+.Header = xlYes
+.MatchCase = False
+.Orientation = xlTopToBottom
+.SortMethod = xlPinYin
+.Apply
+End With
+Selection.AutoFilter
+Sheets("Dispute ID level tracking").Range("A6:M100000").ClearContents
+''dddd
+Workbooks.Open ("C:\Chaitanya\Recon\Unassigned\resultss.csv")
+''''''
+ActiveSheet.Range("A2:M2").AutoFilter Field:=13, Criteria1:="88"
+Range("A2:M2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+Sheets("Dispute ID level tracking").Select
+Range("A5").Select
+ActiveSheet.Paste
+Sheets("Hidden").Select
+Selection.AutoFilter
+Sheets("Dispute ID level tracking").Select
+If Sheets("Dispute ID level tracking").Range("A6") <> "" Then
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+Sheets("Hidden").Range("AH2:AH11").Copy
+Do Until Range("J" & lastrow) <> ""
+If Range("J6") = "" Then
+Range("J6").Select
+ActiveSheet.Paste
+Else
+Range("J5").Select
+Selection.End(xlDown).Select
+Selection.Offset(1, 0).Select
+ActiveSheet.Paste
+End If
+Loop
+strdesc4 = Range("M1").Formula
+Range("M6", "M" & lastrow).Formula = strdesc4
+Range("J6", "J" & lastrow) = Range("M6", "M" & lastrow).Value
+Range("N6", "N" & lastrow).Formula = "=IFERROR(IF(OR(J6=""satising"",J6=""kirpals"",J6=""mdahmda""),NOW(),""""),"""")"
+Range("O6", "O" & lastrow).Formula = "=IFERROR(IF(OR(J6=""sabarisp"",J6=""vismehra"",J6=""gauanant"",J6=""ajaykux"",J6=""suvidhaa"",J6=""rkshap"",J6=""yuserazi"",J6=""mamathp"",J6=""snachike"",J6=""syehamee"",J6=""yadavzjr"",J6=""rmshanmu"",J6=""dyashasg"",J6=""ranimodi"",J6=""agomathr""),NOW(),""""),"""")"
+Range("N6", "O" & lastrow) = Range("N6", "O" & lastrow).Value
+sHostName = Environ$("username")
+Sheets("Dispute ID level tracking").Select
+If Sheets("Dispute ID level tracking").Range("A6") <> "" Then
+strDBName = "Dispute_Case.accdb"
+strMyPath = "\\BLR2-1800082384\Chaitanya\Recon\Database"
+strDB = strMyPath & "\" & strDBName
+connDB.Open ConnectionString:="Provider = Microsoft.ACE.OLEDB.12.0; data source=" & strDB
+Cells.Replace What:="'", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:=",", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:="@", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:="""", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+For i = 6 To 100000
+If Sheets("Dispute ID level tracking").Range("N" & i) <> "" Then
+strSQL = "INSERT INTO Dispute " & "(Dispute_Id,Dispute_Type,Business_Name,Dispute_Title,Dispute_Reason,Dispute_Creation_Date,Dispute_Status,Dispute_Amount,Is_Under_Tolerance,First_Assignee,Status,Type,IOG,Case_Reopened_Flag,Assigned_date_to_Finops ) VALUES (" & "'" & Sheets("Dispute ID level tracking").Range("A" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("B" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("C" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("D" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("E" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("F" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("G" & i) & "'" & "," & Sheets("Dispute ID level tracking").Range("H" & i) & "," & "'" & Sheets("Dispute ID level tracking").Range("I" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("J" & i) & "'" & "," & "'WIP'" & "," & "" _
+& "'" & Sheets("Dispute ID level tracking").Range("L" & i) & "'" & "," & "88" & "," & "'" & "N" & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("N" & i) & "'" & ")"
+End If
+If Sheets("Dispute ID level tracking").Range("O" & i) <> "" Then
+strSQL = "INSERT INTO Dispute " & "(Dispute_Id,Dispute_Type,Business_Name,Dispute_Title,Dispute_Reason,Dispute_Creation_Date,Dispute_Status,Dispute_Amount,Is_Under_Tolerance,First_Assignee,Status,Type,IOG,Case_Reopened_Flag,Assigned_date_to_SS ) VALUES (" & "'" & Sheets("Dispute ID level tracking").Range("A" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("B" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("C" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("D" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("E" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("F" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("G" & i) & "'" & "," & Sheets("Dispute ID level tracking").Range("H" & i) & "," & "'" & Sheets("Dispute ID level tracking").Range("I" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("J" & i) & "'" & "," & "'WIP'" & "," & "" _
+& "'" & Sheets("Dispute ID level tracking").Range("L" & i) & "'" & "," & "88" & "," & "'" & "N" & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("O" & i) & "'" & ")"
+End If
+connDB.Execute strSQL
+If Sheets("Dispute ID level tracking").Range("A" & i + 1) = "" Then Exit For
+Next i
+Set adoRecSet = Nothing
+Set connDB = Nothing
+'Call assign
+End If
+End If
+Sheets("Hidden").Select
+Sheets("Dispute ID level tracking").Range("A6:M100000").ClearContents
+ActiveSheet.Range("A2:M2").AutoFilter Field:=13, Criteria1:="87"
+Range("A2:M2").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+Sheets("Dispute ID level tracking").Select
+Range("A5").Select
+ActiveSheet.Paste
+Sheets("Hidden").Select
+Selection.AutoFilter
+Sheets("Dispute ID level tracking").Select
+If Sheets("Dispute ID level tracking").Range("A6") <> "" Then
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+Sheets("Hidden").Range("AI2:AI9").Copy
+Do Until Range("J" & lastrow) <> ""
+If Range("J6") = "" Then
+Range("J6").Select
+ActiveSheet.Paste
+Else
+Range("J5").Select
+Selection.End(xlDown).Select
+Selection.Offset(1, 0).Select
+ActiveSheet.Paste
+End If
+Loop
+strdesc4 = Range("M2").Formula
+Range("M6", "M" & lastrow).Formula = strdesc4
+Range("J6", "J" & lastrow) = Range("M6", "M" & lastrow).Value
+Range("N6", "N" & lastrow).Formula = "=IFERROR(IF(OR(J6=""satising"",J6=""kirpals"",J6=""mdahmda""),NOW(),""""),"""")"
+Range("O6", "O" & lastrow).Formula = "=IFERROR(IF(OR(J6=""pswat"",J6=""nrajara"",J6=""bhanuamz"",J6=""thripuk"",J6=""yadavzjr"",J6=""agekumar"",J6=""kirmzn"",J6=""rkumrzr"",J6=""waseemsw"",J6=""nehsakha""),NOW(),""""),"""")"
+Range("N6", "O" & lastrow) = Range("N6", "O" & lastrow).Value
+sHostName = Environ$("username")
+Sheets("Dispute ID level tracking").Select
+If Sheets("Dispute ID level tracking").Range("A6") <> "" Then
+strDBName = "Dispute_Case.accdb"
+strMyPath = "\\BLR2-1800082384\Chaitanya\Recon\Database"
+strDB = strMyPath & "\" & strDBName
+connDB.Open ConnectionString:="Provider = Microsoft.ACE.OLEDB.12.0; data source=" & strDB
+Cells.Replace What:="'", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:=",", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:="@", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:="""", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+For i = 6 To 100000
+If Sheets("Dispute ID level tracking").Range("N" & i) <> "" Then
+strSQL = "INSERT INTO Dispute " & "(Dispute_Id,Dispute_Type,Business_Name,Dispute_Title,Dispute_Reason,Dispute_Creation_Date,Dispute_Status,Dispute_Amount,Is_Under_Tolerance,First_Assignee,Status,Type,IOG,Case_Reopened_Flag,Assigned_date_to_Finops ) VALUES (" & "'" & Sheets("Dispute ID level tracking").Range("A" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("B" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("C" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("D" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("E" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("F" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("G" & i) & "'" & "," & Sheets("Dispute ID level tracking").Range("H" & i) & "," & "'" & Sheets("Dispute ID level tracking").Range("I" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("J" & i) & "'" & "," & "'WIP'" & "," & "" _
+& "'" & Sheets("Dispute ID level tracking").Range("L" & i) & "'" & "," & "87" & "," & "'" & "N" & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("N" & i) & "'" & ")"
+End If
+If Sheets("Dispute ID level tracking").Range("O" & i) <> "" Then
+strSQL = "INSERT INTO Dispute " & "(Dispute_Id,Dispute_Type,Business_Name,Dispute_Title,Dispute_Reason,Dispute_Creation_Date,Dispute_Status,Dispute_Amount,Is_Under_Tolerance,First_Assignee,Status,Type,IOG,Case_Reopened_Flag,Assigned_date_to_SS) VALUES (" & "'" & Sheets("Dispute ID level tracking").Range("A" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("B" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("C" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("D" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("E" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("F" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("G" & i) & "'" & "," & Sheets("Dispute ID level tracking").Range("H" & i) & "," & "'" & Sheets("Dispute ID level tracking").Range("I" & i) & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("J" & i) & "'" & "," & "'WIP'" & "," & "" _
+& "'" & Sheets("Dispute ID level tracking").Range("L" & i) & "'" & "," & "87" & "," & "'" & "N" & "'" & "," & "'" & Sheets("Dispute ID level tracking").Range("O" & i) & "'" & ")"
+End If
+connDB.Execute strSQL
+If Sheets("Dispute ID level tracking").Range("A" & i + 1) = "" Then Exit For
+Next i
+Set adoRecSet = Nothing
+Set connDB = Nothing
+'Call assign
+End If
+End If
+Sheets("Hidden").Select
+ActiveSheet.Range("AL:BR").AutoFilter Field:=33, Criteria1:="<>"
+''dddd
+Workbooks.Open ("C:\Chaitanya\Recon\Unassigned\resultss.csv")
+''''''
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+Range("AL1").Select
+Range(Selection, Selection.End(xlDown)).Select
+Selection.Copy
+Sheets("Return ID level tracking").Select
+Range("A2").Select
+ActiveSheet.Paste
+Range("A2").Select
+Selection.Delete Shift:=xlUp
+ActiveSheet.Range("A:A").RemoveDuplicates Columns:=1, Header:=xlYes
+If ActiveSheet.Range("A2") <> "" Then
+Workbooks.Open "\\BLR2-1800082384\Chaitanya\Recon\Others\Shipment_Report\shipmentReport.txt"
+Range("A1", "BA1048576").Select
+Selection.Copy
+ThisWorkbook.Activate
+Sheets("Hidden").Select
+Range("Dk1").Select
+ActiveSheet.Paste
+Application.CutCopyMode = False
+Windows("shipmentReport.txt").Activate
+ActiveWorkbook.Close False
+If Sheets("Hidden").Range("A3") <> "" Then
+strDBName = "Recon Dashboard.accdb"
+strMyPath = "\\BLR2-1800082384\Chaitanya\Recon\Database"
+strDB = strMyPath & "\" & strDBName
+If Sheets("Hidden").Range("A3") <> "" Then
+Sheets("Hidden").Range("E1").ClearContents
+Sheets("Hidden").Range("E1") = "'" & Sheets("Hidden").Range("A3") & "'"
+If Sheets("Hidden").Range("A4") <> "" Then
+i = 4
+Do Until Sheets("Hidden").Range("A" & i) = ""
+strdesc = Sheets("Hidden").Range("E1")
+strdesc1 = Sheets("Hidden").Range("E1") & "," & "'" & Sheets("Hidden").Range("A" & i) & "'"
+Sheets("Hidden").Range("E1") = strdesc1
+i = i + 1
+Loop
+End If
+strdesc2 = Sheets("Hidden").Range("E1")
+strSQL = "Select  [return Id],[Dispute Weight],Recommendation from [Reactive Action Checklist] where [case ID] in (" & "'" & strdesc2 & ")"
+End If
+connDB.Open ConnectionString:="Provider = Microsoft.ACE.OLEDB.12.0; data source=" & strDB
+connDB.Execute strSQL
+adoRecSet.Open Source:=strSQL, ActiveConnection:=connDB, CursorType:=adOpenDynamic, LockType:=adLockOptimistic
+Set Rng = Sheets("Hidden").Range("FQ1")
+lFieldCount = adoRecSet.Fields.Count
+For i = 0 To lFieldCount - 1
+Rng.Offset(0, i).Value = adoRecSet.Fields(i).Name
+Next i
+Rng.Offset(1, 0).CopyFromRecordset adoRecSet
+Set adoRecSet = Nothing
+Set connDB = Nothing
+End If
+Sheets("Return ID level tracking").Select
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+Range("G2", "G" & lastrow).Formula = "=IFERROR(VLOOKUP(A2,Hidden!AL:BR,3,0),"""")"
+Range("B2", "B" & lastrow).Formula = "=IFERROR(VLOOKUP(A2,Hidden!AL:BQ,32,0),"""")"
+Range("C2", "C" & lastrow).Formula = "=IFERROR(VLOOKUP(B2,Hidden!A:H,8,0),"""")"
+Range("D2", "D" & lastrow).Value = "=IFERROR(VLOOKUP(B2,Hidden!A:M,13,0),"""")"
+Range("E2", "E" & lastrow).Formula = "=IFERROR(VLOOKUP(VLOOKUP(G2,Hidden!AN:AO,2,0),Hidden!CA:DH,2,0),"""")"
+Range("F2", "F" & lastrow).Formula = "=IFERROR(VLOOKUP(E2,Hidden!CB:DH,7,0),"""")"
+Range("H2", "H" & lastrow).Formula = "=IFERROR(VLOOKUP(E2,Hidden!CB:DH,23,0),"""")"
+Range("I2", "I" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!AN:BR,8,0),"""")"
+Range("J2", "J" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!AN:BR,11,0),"""")"
+Range("K2", "K" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!AN:BR,9,0),"""")"
+Range("L2", "L" & lastrow).Formula = "=IFERROR(VLOOKUP(A2,Hidden!AL:BR,14,0),"""")"
+Range("M2", "M" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!AN:BR,2,0),"""")"
+Range("N2", "N" & lastrow).Formula = "=IFERROR(IF(VLOOKUP(M2,Hidden!CA:DH,26,0)=""FOB_ORIGIN"",""FRACS"",IF(VLOOKUP(M2,Hidden!CA:DH,26,0)=""FOB_COLLECT"",""FRACS"",IF(VLOOKUP(M2,Hidden!CA:DH,26,0)=""NO_PAYMENT"",""PICK-UP"",IF(VLOOKUP(M2,Hidden!CA:DH,26,0)="""",""FRACS"",IF(VLOOKUP(M2,Hidden!CA:DH,26,0)=""INVOICE_VENDOR"",""PICK-UP"",""""))))),"""")"
+Range("O2", "O" & lastrow).Formula = "=IFERROR(VLOOKUP(E2,Hidden!CB:DH,12,0),"""")"
+Range("P2", "P" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!AN:BM,26,0),"""")"
+Range("Q2", "Q" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!$DM:$EX,20,0),"""")"
+Range("R2", "R" & lastrow).Formula = "=IFERROR(IF(VLOOKUP(G2,Hidden!$DM:$EX,17,0)=0,"""",VLOOKUP(G2,Hidden!$DM:$EX,17,0)),"""")"
+Range("S2", "S" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!$DM:$EX,29,0),"""")"
+Range("T2", "T" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!$DM:$EX,35,0),"""")"
+Range("U2", "U" & lastrow).Formula = "=IFERROR(ROUND(VLOOKUP(G2,Hidden!FQ:FS,2,0),2),"""")"
+Range("V2", "V" & lastrow).Formula = "=IFERROR(ROUND(VLOOKUP(G2,Hidden!$DM:$EX,30,0),2),"""")"
+Range("W2", "W" & lastrow).Formula = "=IFERROR(ROUND(VLOOKUP(G2,Hidden!$DM:$EX,31,0),2),"""")"
+Range("X2", "X" & lastrow).Formula = "=IFERROR(ROUND(VLOOKUP(G2,Hidden!$DM:$EX,32,0),2),"""")"
+Range("Y2", "Y" & lastrow).Formula = "=IFERROR(W2+X2,"""")"
+Range("Z2", "Z" & lastrow).Formula = "=IFERROR(Y2-V2,"""")"
+Range("AA2", "AA" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!AN:BR,20,0),"""")"
+Range("AB2", "AB" & lastrow).Formula = "=IFERROR(VLOOKUP(AA2,Hidden!$DV:$EX,17,0),"""")"
+Range("AC2", "AC" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!$DM:$EX,9,0),"""")"
+Range("AD2", "AD" & lastrow).Formula = "=IFERROR(VLOOKUP(G2,Hidden!FQ:FS,3,0),"""")"
+Range("A2", "AD" & lastrow) = Range("A2", "AD" & lastrow).Value
+
+sHostName = Environ$("username")
+If Sheets("Return ID level tracking").Range("A2") <> "" Then
+strDBName = "Dispute_Case.accdb"
+strMyPath = "\\BLR2-1800082384\Chaitanya\Recon\Database"
+strDB = strMyPath & "\" & strDBName
+connDB.Open ConnectionString:="Provider = Microsoft.ACE.OLEDB.12.0; data source=" & strDB
+Cells.Replace What:="'", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:=",", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:="@", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:="""", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+Cells.Replace What:="-", Replacement:="", LookAt:=xlPart, SearchOrder:= _
+xlByRows, MatchCase:=False, SearchFormat:=False, ReplaceFormat:=False
+For i = 2 To 100000
+strSQL = "INSERT INTO Return " & "(Dis_Ret) VALUES (" & "'" & Sheets("Return ID level tracking").Range("A" & i) & "'" & ")"
+connDB.Execute strSQL
+If Sheets("Return ID level tracking").Range("A" & i + 1) = "" Then Exit For
+Next i
+Set adoRecSet = Nothing
+Set connDB = Nothing
+End If
+
+
+strDBName = "Dispute_Case.accdb"
+strMyPath = "\\BLR2-1800082384\Chaitanya\Recon\Database"
+strDB = strMyPath & "\" & strDBName
+connDB.Open ConnectionString:="Provider = Microsoft.ACE.OLEDB.12.0; data source=" & strDB
+For i = 2 To 1000000
+strSQL = "Select * from Return where Dis_Ret =" & "'" & Sheets("Return ID level tracking").Range("A" & i) & "'"
+adoRecSet.Open Source:=strSQL, ActiveConnection:=connDB, CursorType:=adOpenDynamic, LockType:=adLockOptimistic
+With adoRecSet
+
+If Sheets("Return ID level tracking").Range("B" & i) <> "" Then
+.Fields("Dispute_Case_ID") = Sheets("Return ID level tracking").Range("B" & i)
+End If
+If Sheets("Return ID level tracking").Range("C" & i) <> "" Then
+.Fields("Total_Dispute_Amount") = Sheets("Return ID level tracking").Range("C" & i)
+End If
+If Sheets("Return ID level tracking").Range("D" & i) <> "" Then
+.Fields("IOG") = Sheets("Return ID level tracking").Range("D" & i)
+End If
+If Sheets("Return ID level tracking").Range("E" & i) <> "" Then
+.Fields("Removal_Order_Id") = Sheets("Return ID level tracking").Range("E" & i)
+End If
+If Sheets("Return ID level tracking").Range("F" & i) <> "" Then
+.Fields("Warehouse_Id") = Sheets("Return ID level tracking").Range("F" & i)
+End If
+If Sheets("Return ID level tracking").Range("G" & i) <> "" Then
+.Fields("Return_Id") = Sheets("Return ID level tracking").Range("G" & i)
+End If
+If Sheets("Return ID level tracking").Range("H" & i) <> "" Then
+.Fields("Return_Processed_Date") = Sheets("Return ID level tracking").Range("H" & i)
+End If
+If Sheets("Return ID level tracking").Range("I" & i) <> "" Then
+.Fields("Returned_Quantity") = Sheets("Return ID level tracking").Range("I" & i)
+End If
+If Sheets("Return ID level tracking").Range("J" & i) <> "" Then
+.Fields("Return_Value") = Sheets("Return ID level tracking").Range("J" & i)
+End If
+If Sheets("Return ID level tracking").Range("K" & i) <> "" Then
+.Fields("Returned_Disputed_Qty") = Sheets("Return ID level tracking").Range("K" & i)
+End If
+If Sheets("Return ID level tracking").Range("L" & i) <> "" Then
+.Fields("Return_Disputed_Amount") = Sheets("Return ID level tracking").Range("L" & i)
+End If
+If Sheets("Return ID level tracking").Range("M" & i) <> "" Then
+.Fields("Shipment_Request_ID") = Sheets("Return ID level tracking").Range("M" & i)
+End If
+If Sheets("Return ID level tracking").Range("N" & i) <> "" Then
+.Fields("Freight_Payment_Terms") = Sheets("Return ID level tracking").Range("N" & i)
+End If
+If Sheets("Return ID level tracking").Range("O" & i) <> "" Then
+.Fields("Removal_Disposition") = Sheets("Return ID level tracking").Range("O" & i)
+End If
+If Sheets("Return ID level tracking").Range("P" & i) <> "" Then
+.Fields("Distributor_Return_Type") = Sheets("Return ID level tracking").Range("P" & i)
+End If
+If Sheets("Return ID level tracking").Range("Q" & i) <> "" Then
+.Fields("Estimated_Arrival_Date_time") = Sheets("Return ID level tracking").Range("Q" & i)
+End If
+If Sheets("Return ID level tracking").Range("R" & i) <> "" Then
+.Fields("Actual_Delivery_Date_time") = Sheets("Return ID level tracking").Range("R" & i)
+End If
+If Sheets("Return ID level tracking").Range("S" & i) <> "" Then
+.Fields("Units_Rvred") = Sheets("Return ID level tracking").Range("S" & i)
+End If
+If Sheets("Return ID level tracking").Range("T" & i) <> "" Then
+.Fields("FC_982_units") = Sheets("Return ID level tracking").Range("T" & i)
+End If
+If Sheets("Return ID level tracking").Range("U" & i) <> "" Then
+.Fields("Dispute_Weight") = Sheets("Return ID level tracking").Range("U" & i)
+End If
+If Sheets("Return ID level tracking").Range("V" & i) <> "" Then
+.Fields("Slam_Weight") = Sheets("Return ID level tracking").Range("V" & i)
+End If
+If Sheets("Return ID level tracking").Range("W" & i) <> "" Then
+.Fields("Empty_Box_Weight") = Sheets("Return ID level tracking").Range("W" & i)
+End If
+If Sheets("Return ID level tracking").Range("X" & i) <> "" Then
+.Fields("Total_Asin_Weight") = Sheets("Return ID level tracking").Range("X" & i)
+End If
+If Sheets("Return ID level tracking").Range("Y" & i) <> "" Then
+.Fields("Total_Weight") = Sheets("Return ID level tracking").Range("Y" & i)
+End If
+If Sheets("Return ID level tracking").Range("Z" & i) <> "" Then
+.Fields("Weight_Difference") = Sheets("Return ID level tracking").Range("Z" & i)
+End If
+If Sheets("Return ID level tracking").Range("AA" & i) <> "" Then
+.Fields("Tracking_Id(AWB_LR)") = Sheets("Return ID level tracking").Range("AA" & i)
+End If
+If Sheets("Return ID level tracking").Range("AB" & i) <> "" Then
+.Fields("Carrier_Name") = Sheets("Return ID level tracking").Range("AB" & i)
+End If
+If Sheets("Return ID level tracking").Range("AC" & i) <> "" Then
+.Fields("Delivery_Status_For_Tracking_Id") = Sheets("Return ID level tracking").Range("AC" & i)
+End If
+If Sheets("Return ID level tracking").Range("AD" & i) <> "" Then
+.Fields("Recommendation") = Sheets("Return ID level tracking").Range("AD" & i)
+End If
+.Update
+End With
+adoRecSet.Close
+If Sheets("Return ID level tracking").Range("A" & i + 1) = "" Then Exit For
+Next i
+Set adoRecSet = Nothing
+Set connDB = Nothing
+End If
+Sheets("Hidden").Visible = False
+'Call email
+End If
+'MsgBox "Data Updated", vbOKOnly, "Designed By SS Team"
+MsgBox "Completed"
+End Sub
+Sub rst()
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+Sheets("Dispute ID level tracking").Range("A6:CE400000").ClearContents
+Sheets("Return ID level tracking").Range("A2:AC400000").ClearContents
+End Sub
+Sub email()
+Dim Subj As String
+Dim Email_Subject, Email_Send_From, Email_Body As String
+Dim Mail_Object, nameList As String, o As Variant
+Set Mail_Object = CreateObject("Outlook.Application")
+With Mail_Object.CreateItem(o)
+.Subject = "Dispute Cases Assigned For Today"
+.To = "suvidhaa@amazon.com;bhanuamz@amazon.com;nrajara@amazon.com;gauanant@amazon.com;vismehra@amazon.com;sabarisp@amazon.com;mamathp@amazon.com;thripuk@amazon.com;waseemsw@amazon.com;syehamee@amazon.com;yadavzjr@amazon.com;pswat@amazon.com;snachike@amazon.com;mdahmda@amazon.com;ajaykux@amazon.com;kirpals@amazon.com;rmshanmu@amazon.com;rkumrzr@amazon.com;yuserazi@amazon.com;dyashasg@amazon.com"
+.CC = "sipushpa@amazon.com;nandan@amazon.com"
+.body = "Hi All," & vbNewLine & vbNewLine & _
+"Today's dispute cases has been assigned to you. Please start investigating." & vbNewLine & vbNewLine & _
+"Thanks"
+.send
+End With
+Application.DisplayAlerts = False
+Set Mail_Object = Nothing
+End Sub
+Sub unassigneddata()
+Dim chromePath As String
+Dim strdesc As String
+Dim lastrow As Long
+Sheets("Dispute ID level tracking").Range("R5") = "Download"
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+Sheets("Dispute ID level tracking").Range("R6", "R" & lastrow).Formula = "=CONCATENATE(""https://finopscentral-eu.amazon.com/dispute/download_dispute_line_items?disputeType=VR&disputeId="",A6,""&leid=IN"")"
+Sheets("Dispute ID level tracking").Range("R6", "R" & lastrow) = Sheets("Dispute ID level tracking").Range("R6", "R" & lastrow).Value
+i = 6
+Do Until Sheets("Dispute ID level tracking").Range("R" & i) = ""
+strdesc = Sheets("Dispute ID level tracking").Range("R" & i)
+chromePath = """C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"""
+Shell (chromePath & " -url " & strdesc)
+i = i + 1
+Application.Wait Now + #12:00:05 AM#
+Loop
+Sheets("Hidden").Range("R:R").ClearContents
+Application.Wait Now + #12:02:00 AM#
+End Sub
+
+Sub Mergingfiles()
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+Dim bookList As Workbook
+Dim lastrow As Double
+Dim mergeObj As Object, dirObj As Object, filesObj As Object, everyObj As Object
+Application.ScreenUpdating = False
+Set mergeObj = CreateObject("Scripting.FileSystemObject")
+Dim strdesc, strdesc1 As String
+Set dirObj = mergeObj.GetFolder("C:\Chaitanya\Recon\Unassigned")
+Set filesObj = dirObj.Files
+For Each everyObj In filesObj
+Set bookList = Workbooks.Open(everyObj)
+strdesc2 = ActiveWorkbook.Name
+strdesc3 = everyObj
+strdesc1 = ActiveSheet.Name
+Range("A2:AB" & Range("A65536").End(xlUp).Row).Copy
+ThisWorkbook.Worksheets(3).Activate
+If ActiveSheet.Range("AN2") <> "" Then
+Range("AN1").End(xlDown).Select
+Selection.Offset(1, 0).Select
+Else
+ActiveSheet.Range("AN2").Select
+End If
+ActiveSheet.Paste
+If ActiveSheet.Range("BP2") <> "" Then
+Range("BP1").End(xlDown).Select
+Selection.Offset(1, 0).Select
+Else
+ActiveSheet.Range("BP2").Select
+End If
+ActiveCell.Value = strdesc1
+lastrow = Range("AN" & Rows.Count).End(xlUp).Row
+If Range("BP" & lastrow).Value = "" Then
+Selection.Offset(0, -28).Select
+Selection.End(xlDown).Select
+Selection.Offset(0, 28).Select
+Range(Selection, Selection.End(xlUp)).Select
+Selection.FillDown
+End If
+Windows(strdesc2).Activate
+ActiveWorkbook.Close False
+Kill (strdesc3)
+Next
+lastrow = Range("AN" & Rows.Count).End(xlUp).Row
+Range("BQ2", "BQ" & lastrow) = "=LEFT(BP2,LEN(BP2)-FIND(""-"",BP2))"
+Range("BQ2", "BQ" & lastrow) = Range("BQ2", "BQ" & lastrow).Value
+Range("AM2", "AM" & lastrow) = "=BQ2"
+Range("AL2", "AL" & lastrow) = "=AM2&AN2"
+Range("AL2", "AM" & lastrow) = Range("AL2", "AM" & lastrow).Value
+End Sub
+Sub assign()
+Dim txt As String, link As String
+Dim Element As Object
+Dim IE As Object
+Dim Doc As Object
+Dim objElement As Object
+Dim buttonCollection As Object
+Dim p, strdesc As String
+Application.ScreenUpdating = False
+Dim strMyPath As String, strDBName As String, strDB As String
+Dim strSQL As String
+Dim adoRecSet As New ADODB.Recordset
+Dim connDB As New ADODB.Connection
+Dim lastrow As Long
+Dim a, i As Double
+Sheets("Dispute ID level tracking").Select
+lastrow = Range("A" & Rows.Count).End(xlUp).Row
+Range("R6", "R" & lastrow).ClearContents
+Range("R6", "R" & lastrow).Formula = "=CONCATENATE(""https://finopscentral-eu.amazon.com/dispute/search?searchsource=basic&leid=IN&disputeids="",A6,""&leid=IN&searchsource=basic"")"
+Range("R6", "R" & lastrow) = Range("R6", "R" & lastrow).Value
+a = 6
+Set IE = CreateObject("Internetexplorer.Application")
+IE.Visible = True
+IE.navigate Sheets("Dispute ID level tracking").Range("R" & a)
+Application.Wait Now + #12:00:10 AM#
+Set IE = GetIE(Sheets("Dispute ID level tracking").Range("R" & a))
+Set IE = CreateObject("Internetexplorer.Application")
+IE.Visible = True
+Do Until Sheets("Dispute ID level tracking").Range("A" & a) = ""
+IE.navigate Sheets("Dispute ID level tracking").Range("R" & a)
+Application.Wait Now + #12:00:10 AM#
+Set IE = GetIE(Sheets("Dispute ID level tracking").Range("R" & a))
+With IE.document
+Set Element = IE.document.getElementById("selected-disputes")
+Element.Checked = True
+Element.defaultChecked = False
+IE.document.getElementById("bulk-action-selector1").selectedIndex = 2
+IE.document.getElementById("bulk-action-button1").Click
+Application.Wait Now + #12:00:05 AM#
+IE.document.getElementById("new-assignee").Value = Sheets("Dispute ID level tracking").Range("J" & a)
+Application.Wait Now + #12:00:05 AM#
+IE.document.getElementById("assign-dispute-submit").Click
+Application.Wait Now + #12:00:10 AM#
+End With
+a = a + 1
+Loop
+
+End Sub
+
+Function GetIE(sLocation As String) As Object
+Dim objShell As Object, objShellWindows As Object, o As Object
+Dim sURL As String
+Dim retVal As Object
+Dim a As Double
+    Set retVal = Nothing
+    Set objShell = CreateObject("Shell.Application")
+    Set objShellWindows = objShell.Windows
+a = 6
+    For Each o In objShellWindows
+        sURL = Sheets("Dispute ID level tracking").Range("R" & a)
+        sURL = o.LocationURL
+        If sURL Like sLocation & "*" Then
+            Set retVal = o
+            Exit For
+        End If
+    Next o
+
+    Set GetIE = retVal
+
+End Function
+
+
