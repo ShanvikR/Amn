@@ -1,0 +1,108 @@
+DROP TABLE IF EXISTS T1;
+create temp table T1 AS (
+
+select distinct 
+dr.removal_order_id,
+dr.removal_disposition,
+dr.distributor_id,
+pk.destination_postal_code
+
+
+From booker.d_distributor_returns dr
+left join atrops_ddl.o_notify_exsd_packages pk
+on dr.completed_shipment_id = pk.shipment_id
+
+where dr.creation_date >= '2021-01-01'
+
+);  -- T1
+
+DROP TABLE IF EXISTS T2;
+create temp table T2 AS (
+
+Select distinct 
+
+pincode_src, 
+pincode_dst, 
+MAX(distance_in_km) as distance_in_km
+
+
+from ( 
+
+Select pincode_src, 
+pincode_dst, 
+distance_in_km
+
+from scap.d_pincode_distance_mx_in
+
+UNION ALL
+
+Select pincode_src, 
+pincode_dst, 
+distance_in_km
+
+from scap.d_pin_distance
+
+UNION ALL
+
+Select pincode_src, 
+pincode_dst, 
+distance_in_km
+
+from scap.d_pincode_distance_in  )
+
+
+group by 1,2
+
+);  -- T2
+
+DROP TABLE IF EXISTS T3;
+create temp table T3 AS (
+
+select trunc(rc.creation_date) as creation_date,
+extract(YEAR from rc.creation_date) as order_year,
+extract(MONTH from rc.creation_date) as order_month,
+extract(WEEK from rc.creation_date) as order_week,
+rc.warehouse_id,
+wh.pincode AS warehouse_pincode,
+case when rc.inventory_owner_group_id = '88' then 'CloudTail'
+when rc.inventory_owner_group_id = '87' then 'Appario'
+when rc.inventory_owner_group_id = '89' then 'Aripl'
+else 'others' end as IOG,
+-- rc.inventory_owner_group_id,
+T1.removal_disposition,
+-- rc.removal_disposition_code,
+rc.gl,
+rc.units_shipped,
+rc.removal_order_id,
+T1.distributor_id,
+T1.destination_postal_code
+
+from quicksight_ddl.d_daily_removal_creation rc
+left join T1
+on rc.removal_order_id = T1.removal_order_id
+
+left join scap.d_warehouses_summary wh
+on rc.warehouse_id = wh.WAREHOUSE_ID
+
+where rc.creation_date >= '2021-01-01'
+and rc.units_shipped > 0
+
+);  -- T3
+
+select T3.order_year,
+T3.order_month,
+T3.order_week,
+T3.warehouse_id,
+T3.iog,
+T3.removal_disposition,
+T3.gl,
+case when T2.distance_in_km <= 80 then 'Local (<80 Km)'
+when T2.distance_in_km > 80 and T2.distance_in_km <=350 then 'Regional  (80-350 Km)'
+when T2.distance_in_km > 350 then 'National (>350Km)'
+else '' end as Category,
+T3.units_shipped
+
+from T3
+left join T2
+on T3.warehouse_pincode = T2.pincode_src
+and T3.destination_postal_code = T2.pincode_dst
