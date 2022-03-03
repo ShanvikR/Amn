@@ -24,11 +24,11 @@ left join scap.d_outbound_shipment_data dosp
 on exsd.shipment_id = dosp.fulfillment_shipment_id   
 and dosp.region_id = 4 
 and dosp.marketplace_id = 44571
-and dosp.ship_day > Current_date - 90  
+and dosp.ship_day > Current_date - 90
 
 Where exsd.region_id = 2
     
-and exsd.request_date > Current_date - 90 
+and exsd.request_date > Current_date - 90
 
 
 
@@ -54,8 +54,8 @@ From booker.d_distributor_returns dr
 left join PT
 on dr.completed_shipment_id = PT.shipment_id
 
-where dr.creation_date >= Current_date - 90 
-AND dr.condition = 8 
+where dr.creation_date >= Current_date - 90
+AND dr.condition = 8   -- Shipped
 AND dr.legal_entity_id = '131'
 
 
@@ -152,7 +152,7 @@ else 'FBA' end as IOG,
 -- rc.inventory_owner_group_id,
 T1.removal_disposition,
 -- rc.removal_disposition_code,
--- rc.gl,
+rc.gl,
 rc.units_shipped,
 rc.removal_order_id,
 T1.distributor_id,
@@ -177,13 +177,13 @@ T3.order_week,
 T3.warehouse_id,
 T3.iog,
 T3.removal_disposition,
--- T3.gl,
+T3.gl,
 case when T2.distance_in_km >= 0 and T2.distance_in_km <= 80 then 'Local (<80 Km)'
 when T2.distance_in_km > 80 and T2.distance_in_km <=350 then 'Regional  (80-350 Km)'
 when T2.distance_in_km > 350 then 'National (>350Km)'
 else 'NA' end as Category,
-T3.units_shipped,
-T3.refund_amount
+sum(T3.units_shipped) as units_shipped,
+sum(T3.refund_amount) as refund_amount
 
 from T3
 left join T2
@@ -191,3 +191,6 @@ on T3.warehouse_pincode = T2.pincode_src
 and T3.destination_postal_code = T2.pincode_dst
 
 -- where T3.order_week in ('40','41','42','43','44','45','46')
+-- where T3.order_week in ('2')
+
+group by 1,2,3,4,5,6,7,8
