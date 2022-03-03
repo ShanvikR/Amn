@@ -4,37 +4,30 @@ DROP TABLE IF EXISTS PT;
 
 create temp table PT AS (
 
-select distinct 
+select distinct
 shipment_id, -- completed_shipment_id
-dest_postal_code
+destination_postal_code as dest_postal_code
 
-FROM ( 
-
-select
+from (select
 exsd.shipment_id,
-dosp.shipper_id,
-exsd.destination_postal_code,
-dosp.shipping_address_postal_code,
-case when dosp.shipping_address_postal_code is null then exsd.destination_postal_code
-else dosp.shipping_address_postal_code end as dest_postal_code
-
-From atrops_ddl.o_notify_exsd_packages exsd
-
-left join scap.d_outbound_shipment_data dosp
-on exsd.shipment_id = dosp.fulfillment_shipment_id   
-and dosp.region_id = 4 
-and dosp.marketplace_id = 44571
-and dosp.ship_day > Current_date - 90
-
-Where exsd.region_id = 2
-    
+exsd.destination_postal_code
+from atrops_ddl.o_notify_exsd_packages exsd
+where exsd.region_id = 2
 and exsd.request_date > Current_date - 90
 
+union
 
+select 
+dosp.fulfillment_shipment_id,
+dosp.shipping_address_postal_code
+from scap.d_outbound_shipment_data dosp
+where dosp.region_id = 4 
+and dosp.marketplace_id = 44571
+and dosp.ship_day > Current_date - 90)
 
-) WHERE dest_postal_code is not null
+where shipment_id is not null
 
-); 
+); -- PT
 
 
 DROP TABLE IF EXISTS T5;
@@ -67,13 +60,14 @@ DROP TABLE IF EXISTS T4;
 create temp table T4 AS (
 
 select removal_order_id, 
+trunc(order_creation_date) as creation_date,
 sum(refund_amount) as refund_amount
 
 from scap.d_daily_proactive
 where order_creation_date > Current_date - 90
 AND latest_status != 'Not_shipped'
 
-group by 1
+group by 1,2
 
 ); -- T4
 
@@ -82,6 +76,7 @@ DROP TABLE IF EXISTS T1;
 create temp table T1 AS (
 
 select T5.*,
+T4.creation_date,
 T4.refund_amount
 
 from T5 
@@ -136,12 +131,11 @@ DROP TABLE IF EXISTS T3;
 
 create temp table T3 AS (
 
-select distinct 
-trunc(rc.creation_date) as creation_date,
-extract(YEAR from rc.creation_date) as order_year,
--- date_part(year,rc.creation_date) as order_yr,
-extract(MONTH from rc.creation_date) as order_month,
-extract(WEEK from rc.creation_date) as order_week,
+select distinct
+trunc(T1.creation_date) as creation_date,
+extract(YEAR from T1.creation_date) as order_year,
+extract(MONTH from T1.creation_date) as order_month,
+extract(WEEK from T1.creation_date) as order_week,
 rc.warehouse_id,
 wh.pincode AS warehouse_pincode,
 case when rc.inventory_owner_group_id = '88' then 'CloudTail'
@@ -149,27 +143,36 @@ when rc.inventory_owner_group_id = '87' then 'Appario'
 when rc.inventory_owner_group_id = '89' then 'Aripl'
 when rc.inventory_owner_group_id IN ('104','105','107')  then 'PD'
 else 'FBA' end as IOG,
--- rc.inventory_owner_group_id,
 T1.removal_disposition,
 -- rc.removal_disposition_code,
-rc.gl,
-rc.units_shipped,
+-- rc.gl_product_group,
+gl.glpg_text as gl,
 rc.removal_order_id,
+-- rc.destination_distributor_id,
 T1.distributor_id,
 T1.destination_postal_code,
-T1.refund_amount
+T1.refund_amount,
+sum(rc.quantity) as removal_qty,
+sum(rc.quantity*rc.cost) as Total_cost,
+sum(rc.quantity*rc.refund_amount) as Total_refund
 
-from quicksight_ddl.d_daily_removal_creation rc
-left join T1
+from removalexecution_ddl_ext.o_removal_candidates rc
+
+inner join T1
 on rc.removal_order_id = T1.removal_order_id
 
 left join scap.d_warehouses_summary wh
 on rc.warehouse_id = wh.WAREHOUSE_ID
 
-where rc.creation_date >= Current_date - 90
-and rc.units_shipped > 0
+left join athena_schema.d_glcode gl
+on rc.gl_product_group = gl.glpg
 
-);  -- T3
+where T1.creation_date >= Current_date - 90
+-- and rc.region_id = 4
+-- and rc.removal_order_id in ('3537024411','3538015951')
+
+group by 1,2,3,4,5,6,7,8,9,10,11,12,13
+); -- T3
 
 select T3.order_year,
 T3.order_month,
@@ -182,8 +185,8 @@ case when T2.distance_in_km >= 0 and T2.distance_in_km <= 80 then 'Local (<80 Km
 when T2.distance_in_km > 80 and T2.distance_in_km <=350 then 'Regional  (80-350 Km)'
 when T2.distance_in_km > 350 then 'National (>350Km)'
 else 'NA' end as Category,
-sum(T3.units_shipped) as units_shipped,
-sum(T3.refund_amount) as refund_amount
+sum(T3.removal_qty) as removal_qty,
+sum(T3.Total_refund) as Total_refund
 
 from T3
 left join T2
@@ -191,6 +194,5 @@ on T3.warehouse_pincode = T2.pincode_src
 and T3.destination_postal_code = T2.pincode_dst
 
 -- where T3.order_week in ('40','41','42','43','44','45','46')
--- where T3.order_week in ('2')
 
 group by 1,2,3,4,5,6,7,8
